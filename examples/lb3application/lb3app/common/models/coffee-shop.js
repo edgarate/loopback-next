@@ -1,12 +1,14 @@
 'use strict';
 
+const debug = require('debug')('loopback:example:lb3application');
+
 module.exports = function(CoffeeShop) {
   CoffeeShop.status = function(cb) {
     var currentDate = new Date();
     var currentHour = currentDate.getHours();
     var OPEN_HOUR = 6;
     var CLOSE_HOUR = 20;
-    console.log('Current hour is %d', currentHour);
+    debug('Current hour is %d', currentHour);
     var response;
     if (currentHour > OPEN_HOUR && currentHour < CLOSE_HOUR) {
       response = 'We are open for business.';
@@ -15,16 +17,14 @@ module.exports = function(CoffeeShop) {
     }
     cb(null, response);
   };
-  CoffeeShop.remoteMethod(
-    'status', {
-      http: {
-        path: '/status',
-        verb: 'get',
-      },
-      returns: {
-        arg: 'status',
-        type: 'string',
-      },
-    }
-  );
+  CoffeeShop.remoteMethod('status', {
+    http: {
+      path: '/status',
+      verb: 'get',
+    },
+    returns: {
+      arg: 'status',
+      type: 'string',
+    },
+  });
 };

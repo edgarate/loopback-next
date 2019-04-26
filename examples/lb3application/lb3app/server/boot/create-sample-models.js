@@ -1,8 +1,10 @@
 'use strict';
 
-module.exports = function(app) {
+const debug = require('debug')('loopback:example:lb3application');
+
+module.exports = function(app, cb) {
   app.dataSources.db.automigrate('CoffeeShop', function(err) {
-    if (err) throw err;
+    if (err) cb(err);
 
     app.models.CoffeeShop.create(
       [
@@ -20,9 +22,9 @@ module.exports = function(app) {
         },
       ],
       function(err, coffeeShops) {
-        if (err) throw err;
-
-        console.log('Models created: \n', coffeeShops);
+        if (err) return cb(err);
+        debug('Models created: \n', coffeeShops);
+        cb();
       },
     );
   });

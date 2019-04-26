@@ -4,6 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {BootMixin} from '@loopback/boot';
+import {Lb3AppBooterComponent} from '@loopback/booter-lb3app';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
@@ -24,6 +25,7 @@ export class Lb3Application extends BootMixin(
     this.static('/', path.join(__dirname, '../public'));
 
     this.component(RestExplorerComponent);
+    this.component(Lb3AppBooterComponent);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

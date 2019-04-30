@@ -27,4 +27,13 @@ module.exports = function(CoffeeShop) {
       type: 'string',
     },
   });
+  CoffeeShop.greet = function(cb) {
+    process.nextTick(function() {
+      cb(null, 'Hello from this Coffee Shop');
+    });
+  };
+  CoffeeShop.remoteMethod('greet', {
+    http: {path: '/greet', verb: 'get'},
+    returns: {type: 'string'},
+  });
 };

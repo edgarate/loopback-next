@@ -4,10 +4,10 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {ApplicationConfig} from '@loopback/core';
-import {Lb3Application} from './application';
+import {CoffeeShopApplication} from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new Lb3Application(options);
+  const app = new CoffeeShopApplication(options);
   await app.boot();
   await app.start();
 
@@ -16,4 +16,4 @@ export async function main(options: ApplicationConfig = {}) {
   return app;
 }
 
-export {Lb3Application};
+export {CoffeeShopApplication};

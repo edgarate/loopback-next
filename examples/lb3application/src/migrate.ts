@@ -3,13 +3,13 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {Lb3Application} from './application';
+import {CoffeeShopApplication} from './application';
 
 export async function migrate(args: string[]) {
   const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';
   console.log('Migrating schemas (%s existing schema)', existingSchema);
 
-  const app = new Lb3Application();
+  const app = new CoffeeShopApplication();
   await app.boot();
   await app.migrateSchema({existingSchema});
 

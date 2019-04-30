@@ -12,7 +12,7 @@ import {RestExplorerComponent} from '@loopback/rest-explorer';
 import * as path from 'path';
 import {MySequence} from './sequence';
 
-export class Lb3Application extends BootMixin(
+export class CoffeeShopApplication extends BootMixin(
   RepositoryMixin(RestApplication),
 ) {
   constructor(options: ApplicationConfig = {}) {

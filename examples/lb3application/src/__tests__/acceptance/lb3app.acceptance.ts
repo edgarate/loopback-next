@@ -6,7 +6,7 @@
 import {OpenApiSpec} from '@loopback/rest';
 import {Client, expect} from '@loopback/testlab';
 import * as _ from 'lodash';
-import {Lb3Application} from '../..';
+import {CoffeeShopApplication} from '../..';
 import {givenCoffeeShop, setupApplication} from './test-helper';
 
 const {generateSwaggerSpec} = require('loopback-swagger');
@@ -14,8 +14,8 @@ const swagger2openapi = require('swagger2openapi');
 
 const lb3App = require('../../../lb3app/server/server');
 
-describe('Lb3Application', () => {
-  let app: Lb3Application;
+describe('CoffeeShopApplication', () => {
+  let app: CoffeeShopApplication;
   let client: Client;
 
   before('setupApplication', async () => {

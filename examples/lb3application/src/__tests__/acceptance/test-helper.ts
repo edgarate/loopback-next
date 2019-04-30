@@ -8,11 +8,11 @@ import {
   createRestAppClient,
   givenHttpServerConfig,
 } from '@loopback/testlab';
-import {Lb3Application} from '../..';
+import {CoffeeShopApplication} from '../..';
 const lb3app = require('../../../lb3app/server/server');
 
 export async function setupApplication(): Promise<AppWithClient> {
-  const app = new Lb3Application({
+  const app = new CoffeeShopApplication({
     rest: givenHttpServerConfig(),
   });
 
@@ -25,7 +25,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 }
 
 export interface AppWithClient {
-  app: Lb3Application;
+  app: CoffeeShopApplication;
   client: Client;
 }
 

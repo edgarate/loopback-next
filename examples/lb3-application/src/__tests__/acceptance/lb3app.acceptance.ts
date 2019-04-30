@@ -1,12 +1,12 @@
 // Copyright IBM Corp. 2019. All Rights Reserved.
-// Node module: @loopback/example-lb3application
+// Node module: @loopback/example-lb3-application
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
 import {OpenApiSpec} from '@loopback/rest';
 import {Client, expect} from '@loopback/testlab';
 import * as _ from 'lodash';
-import {CoffeeShopApplication} from '../..';
+import {CoffeeShopApplication} from '../../../src';
 import {givenCoffeeShop, setupApplication} from './test-helper';
 
 const {generateSwaggerSpec} = require('loopback-swagger');

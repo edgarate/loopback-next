@@ -1,10 +1,10 @@
 // Copyright IBM Corp. 2019. All Rights Reserved.
-// Node module: @loopback/example-lb3application
+// Node module: @loopback/example-lb3-application
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
 import {Client} from '@loopback/testlab';
-import {CoffeeShopApplication} from '../..';
+import {CoffeeShopApplication} from '../../../src';
 import {setupApplication} from './test-helper';
 
 describe('HomePage', () => {

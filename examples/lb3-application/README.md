@@ -1,4 +1,4 @@
-# @loopback/example-lb3application
+# @loopback/example-lb3-application
 
 This example demonstrates how to mount your existing LoopBack 3 application in a
 new LoopBack 4 project.

@@ -33,4 +33,12 @@ describe('HomePage', () => {
       .expect('Content-Type', /text\/html/)
       .expect(/<title>LoopBack API Explorer/);
   });
+
+  it('exposes LoopBack 3 home page', async () => {
+    await client
+      .get('/lb3-index.html')
+      .expect(200)
+      .expect('Content-Type', /text\/html/)
+      .expect(/<h1>LoopBack Rocks!/);
+  });
 });

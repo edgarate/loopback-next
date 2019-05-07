@@ -8,6 +8,7 @@ import {EventEmitter} from 'events';
 import {promisify} from 'util';
 import {Binding} from './binding';
 import {BindingFilter} from './binding-filter';
+import {BindingSorter} from './binding-sorter';
 import {Context} from './context';
 import {
   ContextEventType,
@@ -43,6 +44,7 @@ export class ContextView<T = unknown> extends EventEmitter
   constructor(
     protected readonly context: Context,
     public readonly filter: BindingFilter,
+    public readonly sorter?: BindingSorter,
   ) {
     super();
   }
@@ -88,6 +90,9 @@ export class ContextView<T = unknown> extends EventEmitter
   protected findBindings(): Readonly<Binding<T>>[] {
     debug('Finding matching bindings');
     const found = this.context.find(this.filter);
+    if (typeof this.sorter === 'function') {
+      found.sort(this.sorter);
+    }
     this._cachedBindings = found;
     return found;
   }
@@ -158,14 +163,23 @@ export class ContextView<T = unknown> extends EventEmitter
  * Create a context view as a getter
  * @param ctx Context object
  * @param bindingFilter A function to match bindings
+ * @param bindingSorter A function to sort matched bindings
  * @param session Resolution session
  */
 export function createViewGetter<T = unknown>(
   ctx: Context,
   bindingFilter: BindingFilter,
+  bindingSorterOrSession?: BindingSorter | ResolutionSession,
   session?: ResolutionSession,
 ): Getter<T[]> {
-  const view = new ContextView<T>(ctx, bindingFilter);
+  let bindingSorter: BindingSorter | undefined = undefined;
+  if (typeof bindingSorterOrSession === 'function') {
+    bindingSorter = bindingSorterOrSession;
+  } else if (bindingSorterOrSession instanceof ResolutionSession) {
+    session = bindingSorterOrSession;
+  }
+
+  const view = new ContextView<T>(ctx, bindingFilter, bindingSorter);
   view.open();
   return view.asGetter(session);
 }

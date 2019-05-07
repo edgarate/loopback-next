@@ -9,6 +9,7 @@ import {
   BindingScope,
   Context,
   ContextView,
+  createSorterByGroup,
   createViewGetter,
   filterByTag,
 } from '../..';
@@ -24,6 +25,15 @@ describe('ContextView', () => {
 
   it('tracks bindings', () => {
     expect(taggedAsFoo.bindings).to.eql(bindings);
+  });
+
+  it('sorts matched bindings', () => {
+    const view = new ContextView(
+      server,
+      filterByTag('foo'),
+      createSorterByGroup('foo', ['b', 'a']),
+    );
+    expect(view.bindings).to.eql([bindings[1], bindings[0]]);
   });
 
   it('resolves bindings', async () => {
@@ -154,6 +164,22 @@ describe('ContextView', () => {
         .tag('foo');
       expect(await getter()).to.eql(['BAR', 'XYZ', 'FOO']);
     });
+
+    it('creates a getter function for the binding filter and sorter', async () => {
+      const getter = createViewGetter(server, filterByTag('foo'), (a, b) => {
+        return a.key.localeCompare(b.key);
+      });
+      expect(await getter()).to.eql(['BAR', 'FOO']);
+      server
+        .bind('abc')
+        .to('ABC')
+        .tag('abc');
+      server
+        .bind('xyz')
+        .to('XYZ')
+        .tag('foo');
+      expect(await getter()).to.eql(['BAR', 'FOO', 'XYZ']);
+    });
   });
 
   function givenContextView() {
@@ -169,14 +195,14 @@ describe('ContextView', () => {
       server
         .bind('bar')
         .toDynamicValue(() => Promise.resolve('BAR'))
-        .tag('foo', 'bar')
+        .tag({foo: 'a'})
         .inScope(BindingScope.SINGLETON),
     );
     bindings.push(
       app
         .bind('foo')
         .to('FOO')
-        .tag('foo', 'bar'),
+        .tag({foo: 'b'}),
     );
   }
 });

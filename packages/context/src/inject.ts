@@ -20,6 +20,7 @@ import {
   isBindingAddress,
 } from './binding-filter';
 import {BindingAddress} from './binding-key';
+import {BindingSorter} from './binding-sorter';
 import {BindingCreationPolicy, Context} from './context';
 import {ContextView, createViewGetter} from './context-view';
 import {ResolutionOptions, ResolutionSession} from './resolution-session';
@@ -52,6 +53,14 @@ export interface InjectionMetadata extends ResolutionOptions {
    * It's usually set by the decorator implementation.
    */
   decorator?: string;
+  /**
+   * Control if the dependency is optional, default to false
+   */
+  optional?: boolean;
+  /**
+   * Optional sorter for matched bindings
+   */
+  bindingSorter?: BindingSorter;
   /**
    * Other attributes
    */
@@ -109,6 +118,9 @@ export function inject(
     resolve = resolveValuesByFilter;
   }
   const injectionMetadata = Object.assign({decorator: '@inject'}, metadata);
+  if (injectionMetadata.bindingSorter && !resolve) {
+    throw new Error('Binding sorter is only allowed with a binding filter');
+  }
   return function markParameterOrPropertyAsInjected(
     target: Object,
     member: string,
@@ -343,7 +355,7 @@ export namespace inject {
    * @param bindingFilter A binding filter function
    * @param metadata
    */
-  export const view = function injectByFilter(
+  export const view = function injectContextView(
     bindingFilter: BindingFilter,
     metadata?: InjectionMetadata,
   ) {
@@ -530,7 +542,11 @@ function resolveValuesByFilter(
 ) {
   assertTargetType(injection, Array);
   const bindingFilter = injection.bindingSelector as BindingFilter;
-  const view = new ContextView(ctx, bindingFilter);
+  const view = new ContextView(
+    ctx,
+    bindingFilter,
+    injection.metadata.bindingSorter,
+  );
   return view.resolve(session);
 }
 
@@ -549,7 +565,12 @@ function resolveAsGetterByFilter(
 ) {
   assertTargetType(injection, Function, 'Getter function');
   const bindingFilter = injection.bindingSelector as BindingFilter;
-  return createViewGetter(ctx, bindingFilter, session);
+  return createViewGetter(
+    ctx,
+    bindingFilter,
+    injection.metadata.bindingSorter,
+    session,
+  );
 }
 
 /**
@@ -562,7 +583,11 @@ function resolveAsContextView(ctx: Context, injection: Readonly<Injection>) {
   assertTargetType(injection, ContextView);
 
   const bindingFilter = injection.bindingSelector as BindingFilter;
-  const view = new ContextView(ctx, bindingFilter);
+  const view = new ContextView(
+    ctx,
+    bindingFilter,
+    injection.metadata.bindingSorter,
+  );
   view.open();
   return view;
 }

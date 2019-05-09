@@ -92,7 +92,7 @@ class MyControllerWithValues {
     @inject(binding => binding.tagNames.includes('foo'), {
       bindingComparator: (a, b) => {
         // Sort by value of `foo` tag
-        return a.tagMap.foo.localCompare(b.tagMap.foo);
+        return a.tagMap.foo.localeCompare(b.tagMap.foo);
       },
     })
     public values: string[],

@@ -8,6 +8,11 @@ import {Binding} from './binding';
 /**
  * Compare function to sort an array of bindings.
  * It is used by `Array.prototype.sort()`.
+ *
+ * @example
+ * ```ts
+ * const compareByKey: BindingComparator = (a, b) => a.key.localeCompare(b.key);
+ * ```
  */
 export interface BindingComparator {
   /**
@@ -27,18 +32,21 @@ export interface BindingComparator {
 
 /**
  * Creates a binding compare function to sort bindings by tagged group name.
+ *
+ * @remarks
  * Two bindings are compared as follows:
  *
- * 1. Get the `group` value from binding tags, if not present, default to `''`
- * 2. If both bindings have `group` values in `orderedGroups`, honor the order
- * denoted by `orderedGroups`.
+ * 1. Get values for the given tag as `group` for bindings, if the tag is not
+ * present, default `group` to `''`.
+ * 2. If both bindings have `group` value in `orderedGroups`, honor the order
+ * specified by `orderedGroups`.
  * 3. If a binding's `group` does not exist in `orderedGroups`, it comes before
- * the one exists in `orderedGroups`.
- * 4. If both bindings have `group` values outside of `orderedGroups`, they are
+ * the one with `group` exists in `orderedGroups`.
+ * 4. If both bindings have `group` value outside of `orderedGroups`, they are
  * ordered by group names alphabetically.
  *
- * @param groupTagName Name of the tag for group
- * @param orderedGroups An array of group names as predefined orders
+ * @param groupTagName Name of the binding tag for group
+ * @param orderedGroups An array of group names as the predefined order
  */
 export function compareBindingsByGroup(
   groupTagName: string = 'group',
@@ -62,10 +70,13 @@ export function compareBindingsByGroup(
 }
 
 /**
- * Sort bindings by tagged group name
+ * Sort bindings by group names denoted by a tag and the predefined order
+ *
  * @param bindings An array of bindings
- * @param groupTagName Tag name for group
- * @param orderedGroups An array of group names as predefined orders
+ * @param groupTagName Tag name for group, for example, we can use the value
+ * `'a'` of tag `order` as the group name for `binding.tag({order: 'a'})`.
+ *
+ * @param orderedGroups An array of group names as the predefined order
  */
 export function sortBindingsByGroup(
   bindings: Readonly<Binding<unknown>>[],

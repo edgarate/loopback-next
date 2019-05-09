@@ -160,23 +160,51 @@ export class ContextView<T = unknown> extends EventEmitter
 }
 
 /**
- * Create a context view as a getter
+ * Create a context view as a getter with the given filter
  * @param ctx Context object
  * @param bindingFilter A function to match bindings
- * @param bindingComparator A function to sort matched bindings
  * @param session Resolution session
  */
 export function createViewGetter<T = unknown>(
   ctx: Context,
   bindingFilter: BindingFilter,
-  bindingSorterOrSession?: BindingComparator | ResolutionSession,
+  session?: ResolutionSession,
+): Getter<T[]>;
+
+/**
+ * Create a context view as a getter with the given filter and sort matched
+ * bindings by the comparator.
+ * @param ctx Context object
+ * @param bindingFilter A function to match bindings
+ * @param bindingComparator A function to compare two bindings
+ * @param session Resolution session
+ */
+export function createViewGetter<T = unknown>(
+  ctx: Context,
+  bindingFilter: BindingFilter,
+  bindingComparator?: BindingComparator,
+  session?: ResolutionSession,
+): Getter<T[]>;
+
+/**
+ * Create a context view as a getter
+ * @param ctx Context object
+ * @param bindingFilter A function to match bindings
+ * @param bindingComparatorOrSession A function to sort matched bindings or
+ * resolution session if the comparator is not needed
+ * @param session Resolution session if the comparator is provided
+ */
+export function createViewGetter<T = unknown>(
+  ctx: Context,
+  bindingFilter: BindingFilter,
+  bindingComparatorOrSession?: BindingComparator | ResolutionSession,
   session?: ResolutionSession,
 ): Getter<T[]> {
   let bindingComparator: BindingComparator | undefined = undefined;
-  if (typeof bindingSorterOrSession === 'function') {
-    bindingComparator = bindingSorterOrSession;
-  } else if (bindingSorterOrSession instanceof ResolutionSession) {
-    session = bindingSorterOrSession;
+  if (typeof bindingComparatorOrSession === 'function') {
+    bindingComparator = bindingComparatorOrSession;
+  } else if (bindingComparatorOrSession instanceof ResolutionSession) {
+    session = bindingComparatorOrSession;
   }
 
   const view = new ContextView<T>(ctx, bindingFilter, bindingComparator);

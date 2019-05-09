@@ -4,10 +4,11 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {expect} from '@loopback/testlab';
-import {Binding, sortBindingsByGroup} from '../..';
+import {Binding, compareByOrder, sortBindingsByGroup} from '../..';
 
 describe('BindingComparator', () => {
-  const orderedGroups = ['log', 'auth'];
+  const FINAL = Symbol('final');
+  const orderedGroups = ['log', 'auth', FINAL];
   const groupTagName = 'group';
   let bindings: Binding<unknown>[];
   let sortedBindingKeys: string[];
@@ -52,6 +53,17 @@ describe('BindingComparator', () => {
     assertOrder('validator1', 'validator2', 'metrics', 'logger1');
   });
 
+  it('sorts by binding order without group tags', () => {
+    /**
+     * Groups
+     * - '': validator1 // not part of ['log', 'auth']
+     * - 'metrics': metrics // not part of ['log', 'auth']
+     * - 'log': logger1
+     * - 'final': Symbol('final')
+     */
+    assertOrder('validator1', 'metrics', 'logger1', 'final');
+  });
+
   /**
    * The sorted bindings by group:
    * - '': validator1, validator2 // not part of ['log', 'auth']
@@ -70,6 +82,7 @@ describe('BindingComparator', () => {
       Binding.bind('rateLimit').tag({[groupTagName]: 'rateLimit'}),
       Binding.bind('validator1'),
       Binding.bind('validator2'),
+      Binding.bind('final').tag({[groupTagName]: FINAL}),
     ];
   }
 
@@ -91,4 +104,52 @@ describe('BindingComparator', () => {
       prevKey = key;
     }
   }
+});
+
+describe('compareByOrder', () => {
+  it('honors order', () => {
+    expect(compareByOrder('a', 'b', ['b', 'a'])).to.greaterThan(0);
+  });
+
+  it('value not included in order comes first', () => {
+    expect(compareByOrder('a', 'c', ['a', 'b'])).to.greaterThan(0);
+  });
+
+  it('values not included are compared alphabetically', () => {
+    expect(compareByOrder('a', 'c', [])).to.lessThan(0);
+  });
+
+  it('null/undefined/"" values are treated as ""', () => {
+    expect(compareByOrder('', 'c')).to.lessThan(0);
+    expect(compareByOrder(null, 'c')).to.lessThan(0);
+    expect(compareByOrder(undefined, 'c')).to.lessThan(0);
+  });
+
+  it('returns 0 for equal values', () => {
+    expect(compareByOrder('c', 'c')).to.equal(0);
+    expect(compareByOrder(null, '')).to.equal(0);
+    expect(compareByOrder('', undefined)).to.equal(0);
+  });
+
+  it('allows symbols', () => {
+    const a = Symbol('a');
+    const b = Symbol('b');
+    expect(compareByOrder(a, b)).to.lessThan(0);
+    expect(compareByOrder(a, b, [b, a])).to.greaterThan(0);
+    expect(compareByOrder(a, 'b', [b, a])).to.greaterThan(0);
+  });
+
+  it('list symbols before strings', () => {
+    const a = 'a';
+    const b = Symbol('a');
+    expect(compareByOrder(a, b)).to.greaterThan(0);
+    expect(compareByOrder(b, a)).to.lessThan(0);
+  });
+
+  it('compare symbols by description', () => {
+    const a = Symbol('a');
+    const b = Symbol('b');
+    expect(compareByOrder(a, b)).to.lessThan(0);
+    expect(compareByOrder(b, a)).to.greaterThan(0);
+  });
 });

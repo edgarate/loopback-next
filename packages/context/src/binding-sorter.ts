@@ -43,30 +43,67 @@ export interface BindingComparator {
  * 3. If a binding's `group` does not exist in `orderedGroups`, it comes before
  * the one with `group` exists in `orderedGroups`.
  * 4. If both bindings have `group` value outside of `orderedGroups`, they are
- * ordered by group names alphabetically.
+ * ordered by group names alphabetically and symbol values come before string
+ * values.
  *
  * @param groupTagName Name of the binding tag for group
  * @param orderedGroups An array of group names as the predefined order
  */
 export function compareBindingsByGroup(
   groupTagName: string = 'group',
-  orderedGroups: string[] = [],
+  orderedGroups: (string | symbol)[] = [],
 ): BindingComparator {
   return (a: Readonly<Binding<unknown>>, b: Readonly<Binding<unknown>>) => {
-    const g1: string = a.tagMap[groupTagName] || '';
-    const g2: string = b.tagMap[groupTagName] || '';
-    const i1 = orderedGroups.indexOf(g1);
-    const i2 = orderedGroups.indexOf(g2);
-    if (i1 !== -1 || i2 !== -1) {
-      // Honor the group order
-      return i1 - i2;
-    } else {
-      // Neither group is in the pre-defined order
-      // Use alphabetical order instead so that `1-group` is invoked before
-      // `2-group`
-      return g1 < g2 ? -1 : g1 > g2 ? 1 : 0;
-    }
+    return compareByOrder(
+      a.tagMap[groupTagName],
+      b.tagMap[groupTagName],
+      orderedGroups,
+    );
   };
+}
+
+/**
+ * Compare two values by the predefined order
+ *
+ * @remarks
+ *
+ * The comparison is performed as follows:
+ *
+ * 1. If both values are included in `order`, they are sorted by their indexes in
+ * `order`.
+ * 2. The value included in `order` comes after the value not included in `order`.
+ * 3. If neither values are included in `order`, they are sorted:
+ *   - symbol values come before string values
+ *   - alphabetical order for two symbols or two strings
+ *
+ * @param a First value
+ * @param b Second value
+ * @param order An array of values as the predefined order
+ */
+export function compareByOrder(
+  a: string | symbol | undefined | null,
+  b: string | symbol | undefined | null,
+  order: (string | symbol)[] = [],
+) {
+  a = a || '';
+  b = b || '';
+  const i1 = order.indexOf(a);
+  const i2 = order.indexOf(b);
+  if (i1 !== -1 || i2 !== -1) {
+    // Honor the order
+    return i1 - i2;
+  } else {
+    // Neither value is in the pre-defined order
+
+    // symbol comes before string
+    if (typeof a === 'symbol' && typeof b === 'string') return -1;
+    if (typeof a === 'string' && typeof b === 'symbol') return 1;
+
+    // both a and b are symbols or both a and b are strings
+    if (typeof a === 'symbol') a = a.toString();
+    if (typeof b === 'symbol') b = b.toString();
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
 }
 
 /**
@@ -81,7 +118,7 @@ export function compareBindingsByGroup(
 export function sortBindingsByGroup(
   bindings: Readonly<Binding<unknown>>[],
   groupTagName?: string,
-  orderedGroups?: string[],
+  orderedGroups?: (string | symbol)[],
 ) {
   return bindings.sort(compareBindingsByGroup(groupTagName, orderedGroups));
 }

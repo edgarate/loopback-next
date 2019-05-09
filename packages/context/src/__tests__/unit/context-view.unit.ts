@@ -9,7 +9,7 @@ import {
   BindingScope,
   Context,
   ContextView,
-  createSorterByGroup,
+  compareBindingsByGroup,
   createViewGetter,
   filterByTag,
 } from '../..';
@@ -31,7 +31,7 @@ describe('ContextView', () => {
     const view = new ContextView(
       server,
       filterByTag('foo'),
-      createSorterByGroup('foo', ['b', 'a']),
+      compareBindingsByGroup('foo', ['b', 'a']),
     );
     expect(view.bindings).to.eql([bindings[1], bindings[0]]);
   });

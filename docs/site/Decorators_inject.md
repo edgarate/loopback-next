@@ -84,13 +84,13 @@ class MyControllerWithValues {
 ```
 
 To sort matched bindings found by the binding filter function, `@inject` honors
-`bindingSorter` in `metadata`:
+`bindingComparator` in `metadata`:
 
 ```ts
 class MyControllerWithValues {
   constructor(
     @inject(binding => binding.tagNames.includes('foo'), {
-      bindingSorter: (a, b) => {
+      bindingComparator: (a, b) => {
         // Sort by value of `foo` tag
         return a.tagMap.foo.localCompare(b.tagMap.foo);
       },

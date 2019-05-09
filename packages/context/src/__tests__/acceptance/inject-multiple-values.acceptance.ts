@@ -7,10 +7,10 @@ import {expect} from '@loopback/testlab';
 import {
   Context,
   ContextView,
-  createSorterByGroup,
   filterByTag,
   Getter,
   inject,
+  compareBindingsByGroup,
 } from '../..';
 
 let app: Context;
@@ -36,10 +36,10 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
     expect(await getter()).to.eql([3, 7, 5]);
   });
 
-  it('injects as getter with bindingSorter', async () => {
+  it('injects as getter with bindingComparator', async () => {
     class MyControllerWithGetter {
       @inject.getter(workloadMonitorFilter, {
-        bindingSorter: createSorterByGroup('name'),
+        bindingComparator: compareBindingsByGroup('name'),
       })
       getter: Getter<number[]>;
     }
@@ -76,11 +76,11 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
       expect(inst.values).to.eql([3, 5]);
     });
 
-    it('injects as values with bindingSorter', async () => {
+    it('injects as values with bindingComparator', async () => {
       class MyControllerWithBindingSorter {
         constructor(
           @inject(workloadMonitorFilter, {
-            bindingSorter: createSorterByGroup('name'),
+            bindingComparator: compareBindingsByGroup('name'),
           })
           public values: number[],
         ) {}
@@ -93,13 +93,13 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
       expect(inst.values).to.eql([5, 3]);
     });
 
-    it('throws error if bindingSorter is provided without a filter', () => {
+    it('throws error if bindingComparator is provided without a filter', () => {
       expect(() => {
         // tslint:disable-next-line:no-unused
         class ControllerWithInvalidInject {
           constructor(
             @inject('my-key', {
-              bindingSorter: createSorterByGroup('name'),
+              bindingComparator: compareBindingsByGroup('name'),
             })
             public values: number[],
           ) {}
@@ -126,10 +126,10 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
     expect(await view.values()).to.eql([3, 5]);
   });
 
-  it('injects as a view with bindingSorter', async () => {
+  it('injects as a view with bindingComparator', async () => {
     class MyControllerWithView {
       @inject.view(workloadMonitorFilter, {
-        bindingSorter: createSorterByGroup('name'),
+        bindingComparator: compareBindingsByGroup('name'),
       })
       view: ContextView<number[]>;
     }

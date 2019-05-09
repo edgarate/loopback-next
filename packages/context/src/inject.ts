@@ -20,7 +20,7 @@ import {
   isBindingAddress,
 } from './binding-filter';
 import {BindingAddress} from './binding-key';
-import {BindingSorter} from './binding-sorter';
+import {BindingComparator} from './binding-sorter';
 import {BindingCreationPolicy, Context} from './context';
 import {ContextView, createViewGetter} from './context-view';
 import {ResolutionOptions, ResolutionSession} from './resolution-session';
@@ -60,7 +60,7 @@ export interface InjectionMetadata extends ResolutionOptions {
   /**
    * Optional sorter for matched bindings
    */
-  bindingSorter?: BindingSorter;
+  bindingComparator?: BindingComparator;
   /**
    * Other attributes
    */
@@ -118,7 +118,7 @@ export function inject(
     resolve = resolveValuesByFilter;
   }
   const injectionMetadata = Object.assign({decorator: '@inject'}, metadata);
-  if (injectionMetadata.bindingSorter && !resolve) {
+  if (injectionMetadata.bindingComparator && !resolve) {
     throw new Error('Binding sorter is only allowed with a binding filter');
   }
   return function markParameterOrPropertyAsInjected(
@@ -545,7 +545,7 @@ function resolveValuesByFilter(
   const view = new ContextView(
     ctx,
     bindingFilter,
-    injection.metadata.bindingSorter,
+    injection.metadata.bindingComparator,
   );
   return view.resolve(session);
 }
@@ -568,7 +568,7 @@ function resolveAsGetterByFilter(
   return createViewGetter(
     ctx,
     bindingFilter,
-    injection.metadata.bindingSorter,
+    injection.metadata.bindingComparator,
     session,
   );
 }
@@ -586,7 +586,7 @@ function resolveAsContextView(ctx: Context, injection: Readonly<Injection>) {
   const view = new ContextView(
     ctx,
     bindingFilter,
-    injection.metadata.bindingSorter,
+    injection.metadata.bindingComparator,
   );
   view.open();
   return view;

@@ -6,16 +6,28 @@
 import {Binding} from './binding';
 
 /**
- * Compare function to sort bindings
+ * Compare function to sort an array of bindings.
+ * It is used by `Array.prototype.sort()`.
  */
-export type BindingSorter = (
-  bindingA: Readonly<Binding<unknown>>,
-  bindingB: Readonly<Binding<unknown>>,
-) => number;
+export interface BindingComparator {
+  /**
+   * Compare two bindings
+   * @param bindingA First binding
+   * @param bindingB Second binding
+   * @returns A number to determine order of bindingA and bindingB
+   * - 0 leaves bindingA and bindingB unchanged
+   * - <0 bindingA comes before bindingB
+   * - >0 bindingA comes after bindingB
+   */
+  (
+    bindingA: Readonly<Binding<unknown>>,
+    bindingB: Readonly<Binding<unknown>>,
+  ): number;
+}
 
 /**
- * Creates a binding sorter to sort bindings by tagged group name. Two bindings
- * are compared as follows:
+ * Creates a binding compare function to sort bindings by tagged group name.
+ * Two bindings are compared as follows:
  *
  * 1. Get the `group` value from binding tags, if not present, default to `''`
  * 2. If both bindings have `group` values in `orderedGroups`, honor the order
@@ -28,10 +40,10 @@ export type BindingSorter = (
  * @param groupTagName Name of the tag for group
  * @param orderedGroups An array of group names as predefined orders
  */
-export function createSorterByGroup(
+export function compareBindingsByGroup(
   groupTagName: string = 'group',
   orderedGroups: string[] = [],
-): BindingSorter {
+): BindingComparator {
   return (a: Readonly<Binding<unknown>>, b: Readonly<Binding<unknown>>) => {
     const g1: string = a.tagMap[groupTagName] || '';
     const g2: string = b.tagMap[groupTagName] || '';
@@ -60,5 +72,5 @@ export function sortBindingsByGroup(
   groupTagName?: string,
   orderedGroups?: string[],
 ) {
-  return bindings.sort(createSorterByGroup(groupTagName, orderedGroups));
+  return bindings.sort(compareBindingsByGroup(groupTagName, orderedGroups));
 }

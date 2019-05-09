@@ -8,7 +8,7 @@ import {EventEmitter} from 'events';
 import {promisify} from 'util';
 import {Binding} from './binding';
 import {BindingFilter} from './binding-filter';
-import {BindingSorter} from './binding-sorter';
+import {BindingComparator} from './binding-sorter';
 import {Context} from './context';
 import {
   ContextEventType,
@@ -44,7 +44,7 @@ export class ContextView<T = unknown> extends EventEmitter
   constructor(
     protected readonly context: Context,
     public readonly filter: BindingFilter,
-    public readonly sorter?: BindingSorter,
+    public readonly sorter?: BindingComparator,
   ) {
     super();
   }
@@ -163,23 +163,23 @@ export class ContextView<T = unknown> extends EventEmitter
  * Create a context view as a getter
  * @param ctx Context object
  * @param bindingFilter A function to match bindings
- * @param bindingSorter A function to sort matched bindings
+ * @param bindingComparator A function to sort matched bindings
  * @param session Resolution session
  */
 export function createViewGetter<T = unknown>(
   ctx: Context,
   bindingFilter: BindingFilter,
-  bindingSorterOrSession?: BindingSorter | ResolutionSession,
+  bindingSorterOrSession?: BindingComparator | ResolutionSession,
   session?: ResolutionSession,
 ): Getter<T[]> {
-  let bindingSorter: BindingSorter | undefined = undefined;
+  let bindingComparator: BindingComparator | undefined = undefined;
   if (typeof bindingSorterOrSession === 'function') {
-    bindingSorter = bindingSorterOrSession;
+    bindingComparator = bindingSorterOrSession;
   } else if (bindingSorterOrSession instanceof ResolutionSession) {
     session = bindingSorterOrSession;
   }
 
-  const view = new ContextView<T>(ctx, bindingFilter, bindingSorter);
+  const view = new ContextView<T>(ctx, bindingFilter, bindingComparator);
   view.open();
   return view.asGetter(session);
 }

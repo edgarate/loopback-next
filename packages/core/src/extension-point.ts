@@ -74,7 +74,7 @@ export function extensions(extensionPointName?: string) {
     return createViewGetter(
       ctx,
       bindingFilter,
-      injection.metadata.bindingSorter,
+      injection.metadata.bindingComparator,
       session,
     );
   });

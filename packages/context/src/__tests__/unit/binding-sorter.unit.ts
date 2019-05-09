@@ -6,7 +6,7 @@
 import {expect} from '@loopback/testlab';
 import {Binding, sortBindingsByGroup} from '../..';
 
-describe('BindingSorter', () => {
+describe('BindingComparator', () => {
   const orderedGroups = ['log', 'auth'];
   const groupTagName = 'group';
   let bindings: Binding<unknown>[];

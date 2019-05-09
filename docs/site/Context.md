@@ -435,7 +435,7 @@ should be able to pick up these new routes without restarting.
 To support the dynamic tracking of such artifacts registered within a context
 chain, we introduce `ContextObserver` interface and `ContextView` class that can
 be used to watch a list of bindings matching certain criteria depicted by a
-`BindingFilter` function and an optional `BindingSorter` function to sort
+`BindingFilter` function and an optional `BindingComparator` function to sort
 matched bindings.
 
 ```ts

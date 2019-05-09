@@ -9,7 +9,7 @@ import {v1 as uuidv1} from 'uuid';
 import {Binding, BindingTag} from './binding';
 import {BindingFilter, filterByKey, filterByTag} from './binding-filter';
 import {BindingAddress, BindingKey} from './binding-key';
-import {BindingSorter} from './binding-sorter';
+import {BindingComparator} from './binding-sorter';
 import {
   ContextEventObserver,
   ContextEventType,
@@ -444,7 +444,7 @@ export class Context extends EventEmitter {
    * @param filter A function to match bindings
    * @param sorter A function to sort matched bindings
    */
-  createView<T = unknown>(filter: BindingFilter, sorter?: BindingSorter) {
+  createView<T = unknown>(filter: BindingFilter, sorter?: BindingComparator) {
     const view = new ContextView<T>(this, filter, sorter);
     view.open();
     return view;

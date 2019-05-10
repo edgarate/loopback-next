@@ -31,33 +31,33 @@ export interface BindingComparator {
 }
 
 /**
- * Creates a binding compare function to sort bindings by tagged group name.
+ * Creates a binding compare function to sort bindings by tagged phase name.
  *
  * @remarks
  * Two bindings are compared as follows:
  *
- * 1. Get values for the given tag as `group` for bindings, if the tag is not
- * present, default `group` to `''`.
- * 2. If both bindings have `group` value in `orderedGroups`, honor the order
- * specified by `orderedGroups`.
- * 3. If a binding's `group` does not exist in `orderedGroups`, it comes before
- * the one with `group` exists in `orderedGroups`.
- * 4. If both bindings have `group` value outside of `orderedGroups`, they are
- * ordered by group names alphabetically and symbol values come before string
+ * 1. Get values for the given tag as `phase` for bindings, if the tag is not
+ * present, default `phase` to `''`.
+ * 2. If both bindings have `phase` value in `orderOfPhases`, honor the order
+ * specified by `orderOfPhases`.
+ * 3. If a binding's `phase` does not exist in `orderOfPhases`, it comes before
+ * the one with `phase` exists in `orderOfPhases`.
+ * 4. If both bindings have `phase` value outside of `orderOfPhases`, they are
+ * ordered by phase names alphabetically and symbol values come before string
  * values.
  *
- * @param groupTagName Name of the binding tag for group
- * @param orderedGroups An array of group names as the predefined order
+ * @param phaseTagName Name of the binding tag for phase
+ * @param orderOfPhases An array of phase names as the predefined order
  */
-export function compareBindingsByGroup(
-  groupTagName: string = 'group',
-  orderedGroups: (string | symbol)[] = [],
+export function compareBindingsByTag(
+  phaseTagName: string = 'phase',
+  orderOfPhases: (string | symbol)[] = [],
 ): BindingComparator {
   return (a: Readonly<Binding<unknown>>, b: Readonly<Binding<unknown>>) => {
     return compareByOrder(
-      a.tagMap[groupTagName],
-      b.tagMap[groupTagName],
-      orderedGroups,
+      a.tagMap[phaseTagName],
+      b.tagMap[phaseTagName],
+      orderOfPhases,
     );
   };
 }
@@ -107,18 +107,18 @@ export function compareByOrder(
 }
 
 /**
- * Sort bindings by group names denoted by a tag and the predefined order
+ * Sort bindings by phase names denoted by a tag and the predefined order
  *
  * @param bindings An array of bindings
- * @param groupTagName Tag name for group, for example, we can use the value
- * `'a'` of tag `order` as the group name for `binding.tag({order: 'a'})`.
+ * @param phaseTagName Tag name for phase, for example, we can use the value
+ * `'a'` of tag `order` as the phase name for `binding.tag({order: 'a'})`.
  *
- * @param orderedGroups An array of group names as the predefined order
+ * @param orderOfPhases An array of phase names as the predefined order
  */
-export function sortBindingsByGroup(
+export function sortBindingsByPhase(
   bindings: Readonly<Binding<unknown>>[],
-  groupTagName?: string,
-  orderedGroups?: (string | symbol)[],
+  phaseTagName?: string,
+  orderOfPhases?: (string | symbol)[],
 ) {
-  return bindings.sort(compareBindingsByGroup(groupTagName, orderedGroups));
+  return bindings.sort(compareBindingsByTag(phaseTagName, orderOfPhases));
 }

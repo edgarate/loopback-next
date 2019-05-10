@@ -7,7 +7,7 @@ import {expect} from '@loopback/testlab';
 import {
   Binding,
   BindingScope,
-  compareBindingsByGroup,
+  compareBindingsByTag,
   Context,
   ContextView,
   createViewGetter,
@@ -31,7 +31,7 @@ describe('ContextView', () => {
     const view = new ContextView(
       server,
       filterByTag('foo'),
-      compareBindingsByGroup('group', ['b', 'a']),
+      compareBindingsByTag('phase', ['b', 'a']),
     );
     expect(view.bindings).to.eql([bindings[1], bindings[0]]);
   });
@@ -195,14 +195,14 @@ describe('ContextView', () => {
       server
         .bind('bar')
         .toDynamicValue(() => Promise.resolve('BAR'))
-        .tag('foo', 'bar', {group: 'a'})
+        .tag('foo', 'bar', {phase: 'a'})
         .inScope(BindingScope.SINGLETON),
     );
     bindings.push(
       app
         .bind('foo')
         .to('FOO')
-        .tag('foo', 'bar', {group: 'b'}),
+        .tag('foo', 'bar', {phase: 'b'}),
     );
   }
 });

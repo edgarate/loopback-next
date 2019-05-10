@@ -4,48 +4,48 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {expect} from '@loopback/testlab';
-import {Binding, compareByOrder, sortBindingsByGroup} from '../..';
+import {Binding, compareByOrder, sortBindingsByPhase} from '../..';
 
 describe('BindingComparator', () => {
   const FINAL = Symbol('final');
-  const orderedGroups = ['log', 'auth', FINAL];
-  const groupTagName = 'group';
+  const orderOfPhases = ['log', 'auth', FINAL];
+  const phaseTagName = 'phase';
   let bindings: Binding<unknown>[];
   let sortedBindingKeys: string[];
 
   beforeEach(givenBindings);
   beforeEach(sortBindings);
 
-  it('sorts by group', () => {
+  it('sorts by phase', () => {
     /**
-     * Groups
+     * Phases
      * - 'log': logger1, logger2
      * - 'auth': auth1, auth2
      */
     assertOrder('logger1', 'logger2', 'auth1', 'auth2');
   });
 
-  it('sorts by group - unknown group comes before known ones', () => {
+  it('sorts by phase - unknown phase comes before known ones', () => {
     /**
-     * Groups
+     * Phases
      * - 'metrics': metrics // not part of ['log', 'auth']
      * - 'log': logger1
      */
     assertOrder('metrics', 'logger1');
   });
 
-  it('sorts by group alphabetically without ordered group', () => {
+  it('sorts by phase alphabetically without orderOf phase', () => {
     /**
-     * Groups
+     * Phases
      * - 'metrics': metrics // not part of ['log', 'auth']
      * - 'rateLimit': rateLimit // not part of ['log', 'auth']
      */
     assertOrder('metrics', 'rateLimit');
   });
 
-  it('sorts by binding order without group tags', () => {
+  it('sorts by binding order without phase tags', () => {
     /**
-     * Groups
+     * Phases
      * - '': validator1, validator2 // not part of ['log', 'auth']
      * - 'metrics': metrics // not part of ['log', 'auth']
      * - 'log': logger1
@@ -53,9 +53,9 @@ describe('BindingComparator', () => {
     assertOrder('validator1', 'validator2', 'metrics', 'logger1');
   });
 
-  it('sorts by binding order without group tags', () => {
+  it('sorts by binding order without phase tags', () => {
     /**
-     * Groups
+     * Phases
      * - '': validator1 // not part of ['log', 'auth']
      * - 'metrics': metrics // not part of ['log', 'auth']
      * - 'log': logger1
@@ -65,7 +65,7 @@ describe('BindingComparator', () => {
   });
 
   /**
-   * The sorted bindings by group:
+   * The sorted bindings by phase:
    * - '': validator1, validator2 // not part of ['log', 'auth']
    * - 'metrics': metrics // not part of ['log', 'auth']
    * - 'rateLimit': rateLimit // not part of ['log', 'auth']
@@ -74,20 +74,20 @@ describe('BindingComparator', () => {
    */
   function givenBindings() {
     bindings = [
-      Binding.bind('logger1').tag({[groupTagName]: 'log'}),
-      Binding.bind('auth1').tag({[groupTagName]: 'auth'}),
-      Binding.bind('auth2').tag({[groupTagName]: 'auth'}),
-      Binding.bind('logger2').tag({[groupTagName]: 'log'}),
-      Binding.bind('metrics').tag({[groupTagName]: 'metrics'}),
-      Binding.bind('rateLimit').tag({[groupTagName]: 'rateLimit'}),
+      Binding.bind('logger1').tag({[phaseTagName]: 'log'}),
+      Binding.bind('auth1').tag({[phaseTagName]: 'auth'}),
+      Binding.bind('auth2').tag({[phaseTagName]: 'auth'}),
+      Binding.bind('logger2').tag({[phaseTagName]: 'log'}),
+      Binding.bind('metrics').tag({[phaseTagName]: 'metrics'}),
+      Binding.bind('rateLimit').tag({[phaseTagName]: 'rateLimit'}),
       Binding.bind('validator1'),
       Binding.bind('validator2'),
-      Binding.bind('final').tag({[groupTagName]: FINAL}),
+      Binding.bind('final').tag({[phaseTagName]: FINAL}),
     ];
   }
 
   function sortBindings() {
-    sortBindingsByGroup(bindings, groupTagName, orderedGroups);
+    sortBindingsByPhase(bindings, phaseTagName, orderOfPhases);
     sortedBindingKeys = bindings.map(b => b.key);
   }
 

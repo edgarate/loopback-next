@@ -5,12 +5,12 @@
 
 import {expect} from '@loopback/testlab';
 import {
+  compareBindingsByTag,
   Context,
   ContextView,
   filterByTag,
   Getter,
   inject,
-  compareBindingsByGroup,
 } from '../..';
 
 let app: Context;
@@ -39,7 +39,7 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
   it('injects as getter with bindingComparator', async () => {
     class MyControllerWithGetter {
       @inject.getter(workloadMonitorFilter, {
-        bindingComparator: compareBindingsByGroup('name'),
+        bindingComparator: compareBindingsByTag('name'),
       })
       getter: Getter<number[]>;
     }
@@ -80,7 +80,7 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
       class MyControllerWithBindingSorter {
         constructor(
           @inject(workloadMonitorFilter, {
-            bindingComparator: compareBindingsByGroup('name'),
+            bindingComparator: compareBindingsByTag('name'),
           })
           public values: number[],
         ) {}
@@ -99,7 +99,7 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
         class ControllerWithInvalidInject {
           constructor(
             @inject('my-key', {
-              bindingComparator: compareBindingsByGroup('name'),
+              bindingComparator: compareBindingsByTag('name'),
             })
             public values: number[],
           ) {}
@@ -129,7 +129,7 @@ describe('@inject.* to receive multiple values matching a filter', async () => {
   it('injects as a view with bindingComparator', async () => {
     class MyControllerWithView {
       @inject.view(workloadMonitorFilter, {
-        bindingComparator: compareBindingsByGroup('name'),
+        bindingComparator: compareBindingsByTag('name'),
       })
       view: ContextView<number[]>;
     }
